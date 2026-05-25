@@ -1,0 +1,1161 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Vale Negociar — Antecipe com Inteligência</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+<style>
+/* ═══════════════ TOKENS ═══════════════ */
+:root {
+  --navy:#0A2540; --navy-d:#05101e; --navy-m:#0e2f52;
+  --blue:#1E5EFF; --gold:#D4AF37; --gold-l:#f0d060;
+  --gold-g:rgba(212,175,55,.28); --gold-p:rgba(212,175,55,.1);
+  --muted:rgba(255,255,255,.46); --border:rgba(255,255,255,.07);
+  --border-g:rgba(212,175,55,.16); --r:14px; --rl:22px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Sora',sans-serif;background:var(--navy);color:#fff;overflow-x:hidden;cursor:none}
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-thumb{background:var(--gold);border-radius:4px}
+
+/* ─── CURSOR ─── */
+#cursor-dot{position:fixed;width:8px;height:8px;background:var(--gold);border-radius:50%;pointer-events:none;z-index:99999;transform:translate(-50%,-50%);mix-blend-mode:screen;transition:width .18s,height .18s}
+#cursor-ring{position:fixed;width:32px;height:32px;border:1.5px solid rgba(212,175,55,.45);border-radius:50%;pointer-events:none;z-index:99998;transform:translate(-50%,-50%);transition:width .22s,height .22s,border-color .22s}
+body.hovering #cursor-ring{width:48px;height:48px;border-color:var(--gold)}
+
+/* ─── NAV ─── */
+#nav{position:fixed;top:0;left:0;right:0;z-index:900;height:68px;display:flex;align-items:center;justify-content:space-between;padding:0 5%;backdrop-filter:blur(24px);background:rgba(10,37,64,.85);border-bottom:1px solid var(--border-g);transition:background .3s}
+#nav.scrolled{background:rgba(5,16,30,.97)}
+.nlogo{display:flex;align-items:center;gap:10px;text-decoration:none}
+.nv{width:38px;height:38px;border-radius:9px;background:linear-gradient(135deg,var(--gold),#8a6c10);display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:20px;color:var(--navy);box-shadow:0 4px 14px var(--gold-g)}
+.nt1{font-size:15px;font-weight:700;letter-spacing:-.2px}.nt1 span{color:var(--gold)}
+.nt2{font-size:10px;color:var(--muted);letter-spacing:.4px}
+nav ul{display:flex;gap:26px;list-style:none}
+nav a{font-size:13px;font-weight:500;color:var(--muted);text-decoration:none;transition:color .2s}
+nav a:hover{color:#fff}
+.nend{display:flex;gap:10px}
+.bgh{padding:8px 18px;border:1px solid var(--border-g);border-radius:8px;background:transparent;color:var(--gold);font-size:13px;font-weight:600;cursor:pointer;font-family:'Sora',sans-serif;transition:all .2s}
+.bgh:hover{background:var(--gold-p)}
+.bcta{padding:9px 20px;border-radius:8px;background:linear-gradient(135deg,var(--gold),#8a6c10);color:var(--navy);font-size:13px;font-weight:700;border:none;cursor:pointer;font-family:'Sora',sans-serif;box-shadow:0 4px 14px var(--gold-g);transition:all .25s}
+.bcta:hover{transform:translateY(-1px);box-shadow:0 8px 24px var(--gold-g)}
+
+/* ─── HERO ─── */
+#hero{min-height:100vh;display:grid;grid-template-columns:1fr 1fr;gap:0;align-items:center;padding:80px 5% 60px;position:relative;overflow:hidden}
+.hbg{position:absolute;inset:0;background:
+  radial-gradient(ellipse 65% 80% at 68% 40%,rgba(30,94,255,.15),transparent 70%),
+  radial-gradient(ellipse 40% 45% at 88% 75%,rgba(212,175,55,.08),transparent),
+  linear-gradient(170deg,#0A2540,#05101e)}
+.hgrid{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.02) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.02) 1px,transparent 1px);background-size:52px 52px;mask-image:radial-gradient(ellipse 80% 80% at 60% 50%,black,transparent)}
+
+/* hero left */
+.hl{position:relative;z-index:2}
+.pill{display:inline-flex;align-items:center;gap:7px;padding:5px 14px;border-radius:100px;border:1px solid var(--border-g);background:var(--gold-p);font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--gold);margin-bottom:22px}
+.pdot{width:6px;height:6px;border-radius:50%;background:var(--gold);animation:blink 2s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+h1{font-family:'Playfair Display',serif;font-size:clamp(34px,4.5vw,56px);line-height:1.08;font-weight:700;margin-bottom:20px;letter-spacing:-.5px}
+h1 em{color:var(--gold);font-style:italic}
+.hsub{font-size:16px;color:var(--muted);line-height:1.75;max-width:480px;margin-bottom:34px;font-weight:300}
+.hbtns{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:42px}
+.bprim{padding:14px 30px;border-radius:var(--r);background:linear-gradient(135deg,var(--gold),#8a6c10);color:var(--navy);font-size:15px;font-weight:700;border:none;cursor:pointer;font-family:'Sora',sans-serif;box-shadow:0 6px 22px var(--gold-g);display:inline-flex;align-items:center;gap:9px;transition:all .3s;position:relative;overflow:hidden}
+.bprim::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.2),transparent);opacity:0;transition:opacity .3s}
+.bprim:hover::after{opacity:1}
+.bprim:hover{transform:translateY(-2px);box-shadow:0 14px 36px rgba(212,175,55,.45)}
+.bout{padding:14px 28px;border-radius:var(--r);border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.04);color:#fff;font-size:15px;font-weight:500;cursor:pointer;font-family:'Sora',sans-serif;display:inline-flex;align-items:center;gap:8px;transition:all .25s}
+.bout:hover{background:rgba(255,255,255,.08)}
+.srow{display:flex;align-items:center;gap:14px}
+.avs{display:flex}
+.av{width:32px;height:32px;border-radius:50%;border:2px solid var(--navy);margin-left:-9px;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center}
+.av:first-child{margin-left:0}
+.a1{background:linear-gradient(135deg,#4a84ff,#1E5EFF)}.a2{background:linear-gradient(135deg,#e8ca5c,#9a7c1a)}.a3{background:linear-gradient(135deg,#4ade80,#16a34a)}.a4{background:linear-gradient(135deg,#c084fc,#7c3aed)}
+.stxt{font-size:13px;color:var(--muted)}.stxt strong{color:#fff}
+
+/* ═══════════════ LUCI CANDLE MASCOT ═══════════════ */
+.hero-right{position:relative;z-index:2;display:flex;align-items:center;justify-content:center}
+#luci-stage{position:relative;width:360px;height:480px;display:flex;align-items:flex-end;justify-content:center}
+
+/* float badges */
+.fbdg{position:absolute;border-radius:12px;padding:10px 14px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);backdrop-filter:blur(14px);font-size:12px;font-weight:600;pointer-events:none}
+.fbdg .fv{font-size:18px;font-weight:700;color:var(--gold);display:block}
+.fbdg .fl{font-size:10px;color:var(--muted)}
+.fb1{top:52px;right:-14px;animation:fbf 4s ease-in-out infinite}
+.fb2{top:190px;right:-50px;animation:fbf 4s ease-in-out infinite .9s}
+.fb3{top:64px;left:-44px;animation:fbf 4s ease-in-out infinite 1.8s}
+@keyframes fbf{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+
+/* speech bubble */
+#luci-speech{position:absolute;top:22px;left:-52px;background:rgba(255,255,255,.97);color:var(--navy);font-size:12.5px;font-weight:700;padding:10px 15px;border-radius:16px 16px 16px 3px;white-space:nowrap;pointer-events:none;opacity:0;transform:translateY(6px) scale(.92);transition:opacity .3s,transform .32s cubic-bezier(.34,1.56,.64,1);box-shadow:0 6px 24px rgba(0,0,0,.22);z-index:30}
+#luci-speech.on{opacity:1;transform:translateY(0) scale(1)}
+#luci-speech::after{content:'';position:absolute;bottom:-8px;left:16px;border-left:8px solid transparent;border-right:5px solid transparent;border-top:9px solid rgba(255,255,255,.97)}
+
+/* ── CANDLE MASCOT CORE ── */
+#luci-root{
+  position:relative;
+  width:220px; height:300px;
+  display:flex; align-items:flex-end; justify-content:center; gap:10px;
+  transform-origin:center bottom;
+  transition:filter .4s;
+  /* gentle breathing via JS */
+}
+
+/* ground glow */
+#luci-glow{
+  position:absolute;bottom:-12px;left:50%;transform:translateX(-50%);
+  width:180px;height:28px;
+  background:radial-gradient(ellipse,rgba(212,175,55,.4) 0%,transparent 70%);
+  border-radius:50%;
+  animation:glowpulse 2.5s ease-in-out infinite;
+  pointer-events:none;
+}
+@keyframes glowpulse{0%,100%{opacity:.6;transform:translateX(-50%) scaleX(1)}50%{opacity:1;transform:translateX(-50%) scaleX(1.18)}}
+
+/* individual candle wrapper — owns its tilt */
+.candle-wrap{
+  position:relative;
+  display:flex;flex-direction:column;align-items:center;
+  transform-origin:center bottom;
+  transition:transform .55s cubic-bezier(.34,1.56,.64,1);
+}
+
+/* wick (top pin) */
+.wick{
+  width:5px;
+  background:linear-gradient(180deg,var(--gold-l),var(--gold));
+  border-radius:3px 3px 0 0;
+  margin-bottom:-2px;
+  position:relative;z-index:2;
+  box-shadow:0 0 8px var(--gold-g);
+  transition:height .55s cubic-bezier(.34,1.56,.64,1);
+}
+
+/* candle body */
+.candle-body{
+  border-radius:10px;
+  position:relative;
+  overflow:visible;
+  transition:height .55s cubic-bezier(.34,1.56,.64,1), box-shadow .4s;
+  display:flex;align-items:center;justify-content:center;
+}
+/* 3D sheen top face */
+.candle-body::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:40%;
+  border-radius:10px 10px 0 0;
+  background:linear-gradient(180deg,rgba(255,255,255,.22),transparent);
+  pointer-events:none;
+}
+/* 3D side bevel */
+.candle-body::after{
+  content:'';position:absolute;top:8px;right:0;bottom:8px;width:12px;
+  background:linear-gradient(90deg,transparent,rgba(0,0,0,.25));
+  border-radius:0 10px 10px 0;
+  pointer-events:none;
+}
+
+/* candle variants */
+.c-left  .candle-body{width:52px;background:linear-gradient(160deg,#1a4080,#0a2040)}
+.c-center .candle-body{width:72px;background:linear-gradient(160deg,#c8a820,#8a6c10)}
+.c-right  .candle-body{width:52px;background:linear-gradient(160deg,#1a4080,#0a2040)}
+
+/* candle sizes — default */
+.c-left  .wick{height:22px}
+.c-center .wick{height:32px}
+.c-right  .wick{height:18px}
+.c-left  .candle-body{height:130px}
+.c-center .candle-body{height:200px}
+.c-right  .candle-body{height:110px}
+
+/* excited state sizes (via class) */
+.excited .c-left  .wick{height:30px}
+.excited .c-center .wick{height:48px}
+.excited .c-right  .wick{height:26px}
+.excited .c-left  .candle-body{height:165px}
+.excited .c-center .candle-body{height:268px}
+.excited .c-right  .candle-body{height:148px}
+
+/* glow for center candle */
+.c-center .candle-body{
+  box-shadow:0 0 28px rgba(212,175,55,.35), 0 8px 32px rgba(212,175,55,.2);
+}
+.excited .c-center .candle-body{
+  box-shadow:0 0 60px rgba(212,175,55,.65), 0 12px 56px rgba(212,175,55,.45) !important;
+}
+
+/* small base foot */
+.candle-foot{width:60%;height:6px;border-radius:0 0 6px 6px;background:linear-gradient(90deg,rgba(0,0,0,.3),rgba(255,255,255,.06),rgba(0,0,0,.3));margin-top:0}
+.c-center .candle-foot{width:80%}
+
+/* ─── EYE CONTAINER ─── */
+.eye-pair{
+  position:absolute;
+  bottom:55%;
+  left:50%;transform:translateX(-50%);
+  display:flex;gap:9px;
+  pointer-events:none;
+}
+.c-left .eye-pair{gap:7px;bottom:52%}
+.c-right .eye-pair{gap:7px;bottom:52%}
+
+.eye{
+  position:relative;
+  background:radial-gradient(circle at 38% 35%, #fff 0%, #d8eeff 100%);
+  border-radius:50%;
+  overflow:visible;
+  box-shadow:0 2px 8px rgba(0,0,0,.3), inset 0 -2px 4px rgba(0,0,0,.1);
+}
+/* eye sizes */
+.c-center .eye{width:28px;height:30px}
+.c-left   .eye{width:20px;height:22px}
+.c-right  .eye{width:20px;height:22px}
+
+/* pupil */
+.pupil{
+  position:absolute;
+  background:radial-gradient(circle at 38% 35%, #2a2a4a, #050514);
+  border-radius:50%;
+  top:50%;left:50%;
+  transform:translate(-50%,-50%);
+  transition:transform .08s linear;
+}
+.c-center .pupil{width:14px;height:14px}
+.c-left   .pupil{width:10px;height:10px}
+.c-right  .pupil{width:10px;height:10px}
+
+/* pupil shine */
+.pupil::after{
+  content:'';position:absolute;top:15%;left:18%;
+  width:35%;height:35%;
+  background:rgba(255,255,255,.75);
+  border-radius:50%;
+}
+
+/* eyebrow */
+.eyebrow{
+  position:absolute;
+  top:-8px;left:50%;transform:translateX(-50%);
+  width:80%;height:3px;
+  background:var(--gold);
+  border-radius:3px;
+  box-shadow:0 0 6px var(--gold-g);
+  transition:transform .35s ease, top .35s ease;
+}
+.c-center .eyebrow{height:4px;top:-10px}
+
+/* excited eyebrows */
+.excited-face .eyebrow{top:-12px}
+
+/* mouth */
+.mouth{
+  position:absolute;
+  bottom:35%;left:50%;transform:translateX(-50%);
+  pointer-events:none;
+}
+.mouth-svg{overflow:visible}
+.mouth-path{
+  fill:none;
+  stroke:var(--gold);
+  stroke-width:3;
+  stroke-linecap:round;
+  transition:d .4s ease;
+}
+.c-left  .mouth-svg,.c-right .mouth-svg{display:none}
+
+/* expression states */
+/* default = small calm arc */
+/* excited = wide open smile handled via JS d attribute */
+
+/* excited glow ring under mascot */
+#luci-burst{
+  position:absolute;bottom:-8px;left:50%;transform:translateX(-50%);
+  width:220px;height:40px;
+  background:radial-gradient(ellipse,rgba(212,175,55,.0) 0%,transparent 70%);
+  border-radius:50%;pointer-events:none;
+  transition:all .5s ease;
+}
+#luci-burst.on{
+  background:radial-gradient(ellipse,rgba(212,175,55,.55) 0%,transparent 70%);
+  width:280px;height:60px;
+}
+
+/* floating coins */
+.fcoin{position:fixed;pointer-events:none;z-index:9999;font-size:22px;animation:coinrise 1.4s cubic-bezier(.25,.46,.45,.94) forwards}
+@keyframes coinrise{0%{opacity:1;transform:translate(0,0) scale(1) rotate(0deg)}100%{opacity:0;transform:translate(var(--tx),var(--ty)) scale(.2) rotate(var(--tr))}}
+
+/* trend arrow */
+#trend-arrow{
+  position:absolute;right:0;bottom:50%;
+  opacity:0;transform:rotate(-30deg) scale(.7);
+  transition:all .55s cubic-bezier(.34,1.56,.64,1);
+  pointer-events:none;
+}
+#trend-arrow.on{opacity:1;transform:rotate(-30deg) scale(1)}
+.arrow-svg{filter:drop-shadow(0 0 12px rgba(212,175,55,.8))}
+
+/* ─── STATS BELT ─── */
+#stats{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid rgba(255,255,255,.05);border-bottom:1px solid rgba(255,255,255,.05)}
+.sc{padding:30px 24px;text-align:center;border-right:1px solid rgba(255,255,255,.05);transition:background .3s}
+.sc:last-child{border-right:none}
+.sc:hover{background:rgba(255,255,255,.035)}
+.sn{font-family:'Playfair Display',serif;font-size:34px;color:var(--gold);display:block;margin-bottom:4px}
+.sl{font-size:12px;color:var(--muted)}
+
+/* ─── GENERIC SECTION ─── */
+section{padding:90px 5%}
+.ey{font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:10px}
+h2{font-family:'Playfair Display',serif;font-size:clamp(26px,3.4vw,44px);line-height:1.12;margin-bottom:16px}
+h2 em{color:var(--gold);font-style:italic}
+.sub{font-size:15.5px;color:var(--muted);max-width:500px;font-weight:300;line-height:1.75}
+
+/* ─── SOLUTION CARDS ─── */
+.sgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(248px,1fr));gap:16px;margin-top:48px}
+.card{background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:var(--rl);padding:28px;transition:all .35s;position:relative;overflow:hidden}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:1.5px;background:linear-gradient(90deg,transparent,var(--gold),transparent);transform:scaleX(0);transition:transform .4s}
+.card:hover::before{transform:scaleX(1)}
+.card:hover{transform:translateY(-5px);background:rgba(255,255,255,.07);border-color:var(--border-g);box-shadow:0 18px 44px rgba(0,0,0,.28)}
+.ci{width:48px;height:48px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:20px;margin-bottom:18px}
+.ci.b{background:rgba(30,94,255,.14);border:1px solid rgba(30,94,255,.22);color:#7aabff}
+.ci.g{background:var(--gold-p);border:1px solid var(--border-g);color:var(--gold)}
+.card h3{font-size:16px;font-weight:700;margin-bottom:9px}
+.card p{font-size:13.5px;color:var(--muted);line-height:1.65}
+.clink{margin-top:16px;font-size:12px;font-weight:700;color:var(--gold);display:inline-flex;align-items:center;gap:5px;transition:gap .2s}
+.card:hover .clink{gap:9px}
+
+/* ─── HOW ─── */
+.how2{display:grid;grid-template-columns:1fr 1fr;gap:72px;align-items:start;margin-top:52px}
+.steps{display:flex;flex-direction:column}
+.step{display:flex;gap:20px;padding:22px 0;border-bottom:1px solid rgba(255,255,255,.05)}
+.step:last-child{border-bottom:none}
+.stn{flex-shrink:0;width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--gold),#8a6c10);color:var(--navy);font-weight:800;font-size:14px;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px var(--gold-g)}
+.step h4{font-size:15px;font-weight:700;margin-bottom:5px}
+.step p{font-size:13.5px;color:var(--muted);line-height:1.65}
+.dbc{background:rgba(255,255,255,.05);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.09);border-radius:var(--rl);padding:26px;box-shadow:0 24px 56px rgba(0,0,0,.38)}
+.dbh{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.dbt{font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+.dblv{font-size:11px;color:#4ade80;font-weight:600;display:flex;align-items:center;gap:5px}
+.dblv::before{content:'';width:7px;height:7px;border-radius:50%;background:#4ade80;display:inline-block;animation:blink 1.5s infinite}
+.dbv{font-family:'Playfair Display',serif;font-size:32px;margin-bottom:2px}
+.dbsub{font-size:12px;color:var(--muted);margin-bottom:14px}
+.bars{display:flex;gap:5px;height:76px;align-items:flex-end;margin-bottom:16px}
+.bar{flex:1;border-radius:4px 4px 0 0;background:rgba(30,94,255,.38);transition:background .3s}
+.bar:hover,.bar.hi{background:rgba(212,175,55,.78)}
+.opr{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:rgba(255,255,255,.04);border-radius:10px;border:1px solid rgba(255,255,255,.05);margin-bottom:8px}
+.orl{display:flex;align-items:center;gap:9px}
+.ori{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:12px}
+.orn{font-size:12.5px;font-weight:600}.ors{font-size:11px;color:var(--muted)}
+.orv{font-size:13px;font-weight:700;color:var(--gold)}
+.tg{font-size:10px;background:rgba(74,222,128,.1);color:#4ade80;padding:2px 8px;border-radius:100px;font-weight:600}
+
+/* ─── SIMULATOR ─── */
+.sw{display:grid;grid-template-columns:1fr 1fr;gap:52px;align-items:start;margin-top:48px}
+.fl label{display:block;font-size:11px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+.fl input,.fl select{width:100%;padding:12px 15px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:10px;color:#fff;font-size:15px;font-family:'Sora',sans-serif;outline:none;transition:border-color .2s;-webkit-appearance:none;margin-bottom:18px}
+.fl input:focus,.fl select:focus{border-color:rgba(212,175,55,.45)}
+.fl select option{background:#0e2f52}
+.rt{display:flex;justify-content:space-between;margin-bottom:8px}
+.rtl{font-size:11px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--muted)}
+.rtv{font-size:14px;font-weight:700;color:var(--gold)}
+input[type=range]{width:100%;-webkit-appearance:none;height:4px;border-radius:4px;background:rgba(255,255,255,.1);cursor:pointer;outline:none;margin-bottom:18px}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:50%;background:var(--gold);cursor:pointer;box-shadow:0 0 10px var(--gold-g)}
+.rp{background:rgba(30,94,255,.07);border:1px solid rgba(30,94,255,.16);border-radius:var(--rl);padding:28px}
+.rpt{font-size:11px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--muted);margin-bottom:20px}
+.rph{text-align:center;padding:14px 0 20px}
+.rphv{font-family:'Playfair Display',serif;font-size:42px;color:var(--gold);font-style:italic}
+.rphm{font-size:12px;color:#4ade80;font-weight:600;margin-top:5px}
+.rdv{height:1px;background:rgba(255,255,255,.07);margin:0 0 16px}
+.rr{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid rgba(255,255,255,.05)}
+.rr:last-child{border-bottom:none}
+.rk{font-size:13.5px;color:var(--muted)}
+.rv2{font-size:13.5px;font-weight:700}
+.rv2.rd{color:#f87171}.rv2.gr{color:#4ade80}
+.bsim{width:100%;margin-top:20px;padding:14px;border-radius:var(--r);background:linear-gradient(135deg,var(--gold),#8a6c10);color:var(--navy);font-size:15px;font-weight:800;border:none;cursor:pointer;font-family:'Sora',sans-serif;box-shadow:0 6px 18px var(--gold-g);transition:all .25s}
+.bsim:hover{transform:translateY(-2px);box-shadow:0 12px 30px rgba(212,175,55,.45)}
+.sdisc{font-size:11px;color:rgba(255,255,255,.24);text-align:center;margin-top:10px;line-height:1.6}
+
+/* ─── BENEFITS ─── */
+.ben2{display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center}
+.bl{display:flex;flex-direction:column;gap:20px}
+.bi{display:flex;gap:15px;align-items:flex-start}
+.bic{flex-shrink:0;width:44px;height:44px;border-radius:12px;background:var(--gold-p);border:1px solid var(--border-g);display:flex;align-items:center;justify-content:center;font-size:18px;color:var(--gold)}
+.bi h4{font-size:15px;font-weight:700;margin-bottom:4px}
+.bi p{font-size:13.5px;color:var(--muted);line-height:1.65}
+.ts{display:flex;flex-direction:column;gap:12px}
+.tc{display:flex;align-items:center;gap:14px;padding:16px 18px;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:14px;transition:all .3s}
+.tc:hover{background:rgba(255,255,255,.07);border-color:var(--border-g);transform:translateX(4px)}
+.tci{width:42px;height:42px;border-radius:11px;background:rgba(30,94,255,.14);border:1px solid rgba(30,94,255,.22);color:#7aabff;font-size:17px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.tc strong{display:block;font-size:14px;margin-bottom:2px}
+.tc span{font-size:12.5px;color:var(--muted);line-height:1.5}
+
+/* ─── PARTNERS ─── */
+#part{padding:48px 5%;border-top:1px solid rgba(255,255,255,.05);border-bottom:1px solid rgba(255,255,255,.05)}
+.pt{text-align:center;font-size:11px;color:rgba(255,255,255,.26);text-transform:uppercase;letter-spacing:2px;font-weight:700;margin-bottom:28px}
+.pl{display:flex;flex-wrap:wrap;justify-content:center;gap:28px 50px;align-items:center}
+.pl div{font-family:'Playfair Display',serif;font-size:18px;color:rgba(255,255,255,.13);transition:color .3s;cursor:default}
+.pl div:hover{color:rgba(255,255,255,.4)}
+
+/* ─── CTA ─── */
+#cta{text-align:center;position:relative;overflow:hidden}
+#cta::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 55% 65% at 50% 50%,rgba(30,94,255,.1),transparent)}
+.cti{position:relative;z-index:2;max-width:580px;margin:0 auto}
+.cti h2{font-size:clamp(26px,3.6vw,46px);margin-bottom:14px}
+.cti p{font-size:16px;color:var(--muted);margin-bottom:32px;line-height:1.75;font-weight:300}
+.cbs{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+
+/* ─── FOOTER ─── */
+footer{background:#060d1a;border-top:1px solid rgba(255,255,255,.05);padding:60px 5% 26px}
+.fg{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:40px;margin-bottom:44px}
+.fb p{font-size:13px;color:var(--muted);line-height:1.7;margin-top:12px;max-width:260px}
+.certs{display:flex;gap:7px;flex-wrap:wrap;margin-top:16px}
+.cert{padding:3px 11px;border:1px solid var(--border-g);border-radius:100px;font-size:10px;color:var(--gold);font-weight:700;letter-spacing:.5px}
+.fc h5{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:rgba(255,255,255,.26);margin-bottom:16px}
+.fc a{display:block;font-size:13px;color:rgba(255,255,255,.4);text-decoration:none;margin-bottom:9px;transition:color .2s}
+.fc a:hover{color:#fff}
+.fbot{display:flex;justify-content:space-between;align-items:center;padding-top:22px;border-top:1px solid rgba(255,255,255,.05);font-size:12px;color:rgba(255,255,255,.22);flex-wrap:wrap;gap:10px}
+.socl{display:flex;gap:14px}
+.socl a{font-size:16px;color:rgba(255,255,255,.26);transition:color .2s;text-decoration:none}
+.socl a:hover{color:var(--gold)}
+
+/* ─── SCROLL REVEAL ─── */
+.rv{opacity:0;transform:translateY(24px);transition:opacity .7s ease,transform .7s ease}
+.rv.on{opacity:1;transform:none}
+.rv.d1{transition-delay:.1s}.rv.d2{transition-delay:.2s}.rv.d3{transition-delay:.3s}
+
+/* ─── CHAT FAB ─── */
+#lchat{position:fixed;bottom:26px;right:26px;z-index:800;display:flex;flex-direction:column;align-items:flex-end}
+#lfab{width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,var(--gold),#8a6c10);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 28px var(--gold-g),0 0 0 0 rgba(212,175,55,.3);animation:fabp 3s ease-in-out infinite;transition:transform .25s;position:relative}
+#lfab:hover{transform:scale(1.08)}
+@keyframes fabp{0%,100%{box-shadow:0 8px 28px var(--gold-g),0 0 0 0 rgba(212,175,55,.28)}60%{box-shadow:0 8px 28px var(--gold-g),0 0 0 14px rgba(212,175,55,0)}}
+#fbdg-n{position:absolute;top:-4px;right:-4px;width:20px;height:20px;border-radius:50%;background:#ef4444;color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;border:2px solid var(--navy-d);animation:bb .5s cubic-bezier(.34,1.56,.64,1) .8s backwards}
+@keyframes bb{from{transform:scale(0)}to{transform:scale(1)}}
+#lpanel{width:318px;margin-bottom:12px;background:rgba(10,37,64,.97);backdrop-filter:blur(28px);border:1px solid var(--border-g);border-radius:20px;overflow:hidden;box-shadow:0 24px 56px rgba(0,0,0,.5);transform:scale(.82) translateY(18px);transform-origin:bottom right;opacity:0;pointer-events:none;transition:all .32s cubic-bezier(.34,1.56,.64,1)}
+#lpanel.open{transform:scale(1) translateY(0);opacity:1;pointer-events:all}
+.lph{background:linear-gradient(135deg,var(--navy-m),#163d6e);padding:15px 17px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--border-g)}
+.lpa{width:42px;height:42px;flex-shrink:0}
+.lpn{font-size:14px;font-weight:700}.lps{font-size:11px;color:#4ade80;display:flex;align-items:center;gap:4px}
+.lps::before{content:'';width:6px;height:6px;border-radius:50%;background:#4ade80;display:inline-block;animation:blink 1.5s infinite}
+.lpcl{margin-left:auto;background:transparent;border:none;color:var(--muted);font-size:18px;cursor:pointer;padding:4px;transition:color .2s}
+.lpcl:hover{color:#fff}
+.lpms{padding:16px;height:230px;overflow-y:auto;display:flex;flex-direction:column;gap:10px}
+.lpms::-webkit-scrollbar{width:3px}
+.lpms::-webkit-scrollbar-thumb{background:var(--border-g)}
+.msg{max-width:82%;padding:10px 13px;border-radius:14px;font-size:13px;line-height:1.55;animation:mi .3s cubic-bezier(.34,1.56,.64,1)}
+@keyframes mi{from{opacity:0;transform:translateY(7px) scale(.95)}to{opacity:1;transform:none}}
+.msg.l{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.07);border-bottom-left-radius:3px;align-self:flex-start}
+.msg.u{background:linear-gradient(135deg,var(--blue),#1240cc);border-bottom-right-radius:3px;align-self:flex-end}
+.mtime{font-size:10px;color:var(--muted);margin-top:3px}
+.typing{display:flex;gap:4px;padding:8px 10px;align-self:flex-start}
+.td{width:7px;height:7px;border-radius:50%;background:var(--muted);animation:td .9s ease-in-out infinite}
+.td:nth-child(2){animation-delay:.15s}.td:nth-child(3){animation-delay:.3s}
+@keyframes td{0%,60%,100%{transform:translateY(0);opacity:.4}30%{transform:translateY(-6px);opacity:1}}
+.lpq{padding:0 16px 10px;display:flex;flex-wrap:wrap;gap:6px}
+.lqb{padding:6px 12px;border-radius:100px;border:1px solid var(--border-g);background:transparent;color:var(--gold);font-size:12px;font-weight:600;cursor:pointer;font-family:'Sora',sans-serif;transition:all .2s}
+.lqb:hover{background:var(--gold-p)}
+.lpi{display:flex;gap:8px;padding:11px 13px;border-top:1px solid var(--border)}
+.lpi input{flex:1;padding:9px 12px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#fff;font-size:13px;font-family:'Sora',sans-serif;outline:none;transition:border-color .2s}
+.lpi input:focus{border-color:rgba(212,175,55,.38)}
+.lpi input::placeholder{color:var(--muted)}
+.lsen{width:36px;height:36px;border-radius:8px;background:linear-gradient(135deg,var(--gold),#8a6c10);border:none;color:var(--navy);font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:transform .2s}
+.lsen:hover{transform:scale(1.08)}
+
+/* responsive */
+@media(max-width:960px){
+  #hero{grid-template-columns:1fr}
+  .hero-right{display:none}
+  .how2,.sw,.ben2{grid-template-columns:1fr;gap:40px}
+  #stats{grid-template-columns:1fr 1fr}
+  .fg{grid-template-columns:1fr 1fr}
+  nav ul{display:none}
+}
+@media(max-width:600px){
+  #stats,.fg{grid-template-columns:1fr}
+  .sgrid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<div id="cursor-dot"></div>
+<div id="cursor-ring"></div>
+
+<!-- ════════════ NAV ════════════ -->
+<nav id="nav">
+  <a href="#" class="nlogo">
+    <div class="nv">V</div>
+    <div><div class="nt1">Vale <span>Negociar</span></div><div class="nt2">Antecipe hoje. Cresça amanhã.</div></div>
+  </a>
+  <ul>
+    <li><a href="#how">Como funciona</a></li>
+    <li><a href="#sol">Soluções</a></li>
+    <li><a href="#sim">Simulador</a></li>
+    <li><a href="#ben">Para empresas</a></li>
+    <li><a href="#ben">Para fornecedores</a></li>
+    <li><a href="#">Blog</a></li>
+  </ul>
+  <div class="nend">
+    <button class="bgh">Entrar</button>
+    <button class="bcta">Cadastrar-se</button>
+  </div>
+</nav>
+
+<!-- ════════════ HERO ════════════ -->
+<section id="hero">
+  <div class="hbg"></div><div class="hgrid"></div>
+
+  <div class="hl">
+    <div class="pill rv"><span class="pdot"></span>Plataforma de Antecipação de Recebíveis</div>
+    <h1 class="rv d1">Antecipe recebíveis com <em>inteligência,</em> liquidez e segurança.</h1>
+    <p class="hsub rv d2">Conectamos empresas e fornecedores em um ambiente digital inteligente, seguro e transparente para negociar antecipações com agilidade real.</p>
+    <div class="hbtns rv d3">
+      <button class="bprim" id="simBtn"><i class="fa-solid fa-chart-line"></i> Simular agora</button>
+      <button class="bout" onclick="document.getElementById('how').scrollIntoView({behavior:'smooth'})"><i class="fa-regular fa-circle-play"></i> Saiba mais</button>
+    </div>
+    <div class="srow rv">
+      <div class="avs"><div class="av a1">A</div><div class="av a2">B</div><div class="av a3">C</div><div class="av a4">+</div></div>
+      <span class="stxt"><strong>+200 empresas</strong> já antecipam com a gente</span>
+    </div>
+  </div>
+
+  <!-- ════ LUCI CANDLE MASCOT ════ -->
+  <div class="hero-right">
+    <div id="luci-stage">
+      <!-- float badges -->
+      <div class="fbdg fb1"><span class="fv">R$280K</span><span class="fl">aprovado agora ✓</span></div>
+      <div class="fbdg fb2"><span class="fv">0,65%</span><span class="fl">a.m. taxa mínima</span></div>
+      <div class="fbdg fb3"><span class="fv">98s</span><span class="fl">aprovação média</span></div>
+      <!-- speech bubble -->
+      <div id="luci-speech">Mercado em alta! 📈</div>
+
+      <!-- trend arrow (excited state) -->
+      <div id="trend-arrow">
+        <svg class="arrow-svg" width="80" height="80" viewBox="0 0 80 80">
+          <defs>
+            <linearGradient id="arrowGrad" x1="0%" y1="100%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#D4AF37"/>
+              <stop offset="100%" stop-color="#f0d060"/>
+            </linearGradient>
+          </defs>
+          <path d="M10 65 Q30 30 65 10" stroke="url(#arrowGrad)" stroke-width="4" fill="none" stroke-linecap="round"/>
+          <polygon points="65,10 50,18 58,26" fill="url(#arrowGrad)"/>
+        </svg>
+      </div>
+
+      <!-- LUCI ROOT -->
+      <div id="luci-root">
+        <!-- ground glow -->
+        <div id="luci-glow"></div>
+        <!-- burst ring -->
+        <div id="luci-burst"></div>
+
+        <!-- LEFT candle -->
+        <div class="candle-wrap" id="cLeft" style="margin-bottom:14px">
+          <div class="wick"></div>
+          <div class="candle-body c-left-body">
+            <div class="eye-pair">
+              <div class="eye"><div class="pupil" id="pupLL"></div><div class="eyebrow"></div></div>
+              <div class="eye"><div class="pupil" id="pupLR"></div><div class="eyebrow"></div></div>
+            </div>
+          </div>
+          <div class="candle-foot"></div>
+        </div>
+
+        <!-- CENTER candle (main character) -->
+        <div class="candle-wrap" id="cCenter">
+          <div class="wick"></div>
+          <div class="candle-body c-center-body">
+            <div class="eye-pair">
+              <div class="eye"><div class="pupil" id="pupCL"></div><div class="eyebrow"></div></div>
+              <div class="eye"><div class="pupil" id="pupCR"></div><div class="eyebrow"></div></div>
+            </div>
+            <!-- mouth (center only) -->
+            <div class="mouth">
+              <svg class="mouth-svg" id="mouthSvg" width="36" height="20" viewBox="0 0 36 20">
+                <path class="mouth-path" id="mouthPath" d="M4 8 Q18 16 32 8"/>
+              </svg>
+            </div>
+          </div>
+          <div class="candle-foot"></div>
+        </div>
+
+        <!-- RIGHT candle -->
+        <div class="candle-wrap" id="cRight" style="margin-bottom:8px">
+          <div class="wick"></div>
+          <div class="candle-body c-right-body">
+            <div class="eye-pair">
+              <div class="eye"><div class="pupil" id="pupRL"></div><div class="eyebrow"></div></div>
+              <div class="eye"><div class="pupil" id="pupRR"></div><div class="eyebrow"></div></div>
+            </div>
+          </div>
+          <div class="candle-foot"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STATS -->
+<div id="stats">
+  <div class="sc rv"><span class="sn">R$2,1Bi</span><span class="sl">Em recebíveis negociados</span></div>
+  <div class="sc rv d1"><span class="sn">+3.800</span><span class="sl">Empresas ativas</span></div>
+  <div class="sc rv d2"><span class="sn">98s</span><span class="sl">Aprovação média</span></div>
+  <div class="sc rv d3"><span class="sn">0,65%</span><span class="sl">Taxa a partir de a.m.</span></div>
+</div>
+
+<!-- SOLUTIONS -->
+<section id="sol">
+  <div class="ey rv">Nossas Soluções</div>
+  <h2 class="rv">Para <em>todos os agentes</em> do ecossistema</h2>
+  <p class="sub rv">Empresas e fornecedores conectados em um ambiente digital de alta performance.</p>
+  <div class="sgrid">
+    <div class="card rv"><div class="ci b"><i class="fa-solid fa-building-columns"></i></div><h3>Para Empresas</h3><p>Melhore seu fluxo de caixa antecipando recebíveis de forma inteligente. Gerencie toda sua cadeia de fornecedores em um painel unificado.</p><a class="clink" href="#">Saiba mais <i class="fa-solid fa-arrow-right"></i></a></div>
+    <div class="card rv d1"><div class="ci g"><i class="fa-solid fa-truck-fast"></i></div><h3>Para Fornecedores</h3><p>Ofereça condições melhores e receba pagamentos antecipados. Sem burocracia, sem filas. Liquidez imediata para seu negócio crescer.</p><a class="clink" href="#">Saiba mais <i class="fa-solid fa-arrow-right"></i></a></div>
+    <div class="card rv d2"><div class="ci b"><i class="fa-solid fa-droplet"></i></div><h3>Mais Liquidez</h3><p>Tenha capital disponível quando precisar. Algoritmos proprietários otimizam condições de antecipação em tempo real.</p><a class="clink" href="#">Saiba mais <i class="fa-solid fa-arrow-right"></i></a></div>
+    <div class="card rv d3"><div class="ci g"><i class="fa-solid fa-shield-halved"></i></div><h3>100% Seguro</h3><p>Tecnologia bancária de ponta e parceiros regulados pelo Banco Central para sua total proteção.</p><a class="clink" href="#">Saiba mais <i class="fa-solid fa-arrow-right"></i></a></div>
+  </div>
+</section>
+
+<!-- HOW -->
+<section id="how" style="background:rgba(255,255,255,.015)">
+  <div class="ey rv">Processo</div><h2 class="rv">Como <em>funciona?</em></h2>
+  <div class="how2">
+    <div class="steps">
+      <div class="step rv"><div class="stn">1</div><div><h4>Você envia seus recebíveis</h4><p>Cadastre-se em minutos. Envie notas fiscais via plataforma ou integração direta com seu ERP.</p></div></div>
+      <div class="step rv d1"><div class="stn">2</div><div><h4>Analisamos e fazemos uma oferta</h4><p>Nossa engine de crédito analisa o risco automaticamente. Oferta gerada em segundos com transparência total.</p></div></div>
+      <div class="step rv d2"><div class="stn">3</div><div><h4>Você aceita e recebe na conta</h4><p>Aprovação em menos de 2 minutos. O valor líquido é depositado no mesmo dia via PIX ou TED.</p></div></div>
+      <div class="step rv d3"><div class="stn">4</div><div><h4>Seu fornecedor é pago na data</h4><p>Na data de vencimento, a empresa pagadora liquida com a plataforma. Ciclo completo e auditável.</p></div></div>
+    </div>
+    <div class="dbc rv">
+      <div class="dbh"><span class="dbt">Painel de Operações</span><span class="dblv">Ao vivo</span></div>
+      <div class="dbv">R$ 4,82M</div><div class="dbsub">Volume antecipado hoje</div>
+      <div class="bars">
+        <div class="bar" style="height:38%"></div><div class="bar" style="height:54%"></div>
+        <div class="bar" style="height:44%"></div><div class="bar" style="height:70%"></div>
+        <div class="bar" style="height:56%"></div><div class="bar" style="height:83%"></div>
+        <div class="bar hi" style="height:97%"></div>
+      </div>
+      <div class="opr"><div class="orl"><div class="ori" style="background:rgba(74,222,128,.1);color:#4ade80"><i class="fa-solid fa-check"></i></div><div><div class="orn">Grupo Alfa Indústria</div><div class="ors">Aprovado · 2min</div></div></div><div style="text-align:right"><div class="orv">R$280K</div><div class="tg">+2,4%</div></div></div>
+      <div class="opr"><div class="orl"><div class="ori" style="background:var(--gold-p);color:var(--gold)"><i class="fa-solid fa-clock"></i></div><div><div class="orn">Beta Fornecedora Ltda</div><div class="ors">Em análise · 98s</div></div></div><div class="orv">R$145K</div></div>
+      <div class="opr" style="margin-bottom:0"><div class="orl"><div class="ori" style="background:rgba(30,94,255,.14);color:#7aabff"><i class="fa-solid fa-bolt"></i></div><div><div class="orn">RetailMax S.A.</div><div class="ors">Liquidado</div></div></div><div class="orv" style="color:#4ade80">R$560K</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- SIMULATOR -->
+<section id="sim">
+  <div class="ey rv">Simulador</div><h2 class="rv">Simule sua <em>antecipação</em></h2>
+  <p class="sub rv">Calcule em tempo real o valor líquido que você receberá ao antecipar seus recebíveis.</p>
+  <div class="sw">
+    <div class="rv">
+      <div class="fl"><label>Valor do recebível</label><input id="sv" type="text" value="R$ 100.000,00" oninput="runSim()"/></div>
+      <div class="fl"><label>Prazo para recebimento</label><select id="spr" onchange="runSim()"><option value="30">30 dias</option><option value="60" selected>60 dias</option><option value="90">90 dias</option><option value="120">120 dias</option></select></div>
+      <div><div class="rt"><span class="rtl">Taxa estimada</span><span class="rtv" id="txTxt">1,29% a.m.</span></div><input type="range" id="st" min=".5" max="3" step=".01" value="1.29" oninput="runSim()"/></div>
+      <button class="bprim" id="simBtn2" style="width:100%;justify-content:center;padding:15px"><i class="fa-solid fa-chart-line"></i> Simular agora</button>
+    </div>
+    <div class="rv d1">
+      <div class="rp">
+        <div class="rpt">Resultado da simulação</div>
+        <div class="rph"><div style="font-size:12px;color:var(--muted);margin-bottom:5px">Você antecipa hoje</div><div class="rphv" id="rLiq">R$ 98.710,00</div><div class="rphm">💰 Você ganha liquidez e faz seu negócio crescer!</div></div>
+        <div class="rdv"></div>
+        <div class="rr"><span class="rk">Valor bruto</span><span class="rv2" id="rB">R$ 100.000,00</span></div>
+        <div class="rr"><span class="rk">Prazo</span><span class="rv2" id="rP">60 dias</span></div>
+        <div class="rr"><span class="rk">Taxa aplicada</span><span class="rv2" id="rT">1,29% a.m.</span></div>
+        <div class="rr"><span class="rk">Desconto total</span><span class="rv2 rd" id="rD">- R$ 1.290,00</span></div>
+        <div class="rr"><span class="rk">Você recebe antes</span><span class="rv2 gr" id="rA">58 dias</span></div>
+      </div>
+      <p class="sdisc">Simulação não constitui proposta comercial. Taxas sujeitas a análise de crédito.</p>
+    </div>
+  </div>
+</section>
+
+<!-- BENEFITS -->
+<section id="ben" style="background:rgba(255,255,255,.015)">
+  <div class="ben2">
+    <div>
+      <div class="ey rv">Benefícios</div><h2 class="rv">Por que a <em>Vale Negociar?</em></h2>
+      <div class="bl" style="margin-top:32px">
+        <div class="bi rv"><div class="bic"><i class="fa-solid fa-bolt"></i></div><div><h4>Aprovação em minutos</h4><p>Engine de crédito proprietária processa em menos de 2 minutos. Sem filas, sem papelada.</p></div></div>
+        <div class="bi rv d1"><div class="bic"><i class="fa-solid fa-percent"></i></div><div><h4>Taxas a partir de 0,65% a.m.</h4><p>Transparência total. Sem tarifas ocultas. A melhor taxa para seu perfil.</p></div></div>
+        <div class="bi rv d2"><div class="bic"><i class="fa-solid fa-plug"></i></div><div><h4>Integração via API</h4><p>Conecte seu ERP em horas. Documentação completa e suporte 24/7 dedicado.</p></div></div>
+        <div class="bi rv d3"><div class="bic"><i class="fa-solid fa-pix"></i></div><div><h4>Liquidação no mesmo dia</h4><p>Receba via PIX ou TED na conta corrente. Liquidez imediata quando precisa.</p></div></div>
+      </div>
+    </div>
+    <div class="ts rv">
+      <div class="tc"><div class="tci"><i class="fa-solid fa-certificate"></i></div><div><strong>Banco Central Homologado</strong><span>Operamos como SCD sob resolução BCB nº 88/2021.</span></div></div>
+      <div class="tc"><div class="tci"><i class="fa-solid fa-lock"></i></div><div><strong>ISO 27001 Certificada</strong><span>Segurança auditada anualmente por terceiros independentes.</span></div></div>
+      <div class="tc"><div class="tci"><i class="fa-solid fa-globe"></i></div><div><strong>Open Finance Integrado</strong><span>Análise em tempo real via Open Finance do Banco Central.</span></div></div>
+      <div class="tc"><div class="tci"><i class="fa-solid fa-headset"></i></div><div><strong>Suporte 24/7 Dedicado</strong><span>Gerente exclusivo + equipe técnica sempre disponível.</span></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- PARTNERS -->
+<div id="part"><p class="pt">Empresas que confiam na Vale Negociar</p><div class="pl"><div>BRASILTECH</div><div>GRUPO ATLAS</div><div>NORDVEST</div><div>LOGÍSTICA PRO</div><div>MAXISUPRIMENTOS</div><div>CONSTRUVALE</div><div>TECNOPARTS</div><div>AGROCENTER</div></div></div>
+
+<!-- CTA -->
+<section id="cta">
+  <div class="cti">
+    <div class="ey rv" style="text-align:center">Comece Agora</div>
+    <h2 class="rv" style="text-align:center">Transforme recebíveis em <em>liquidez imediata</em></h2>
+    <p class="rv" style="text-align:center;font-size:16px;color:var(--muted);margin-bottom:32px;font-weight:300;line-height:1.75">Abra sua conta em minutos. Sem burocracia, sem taxa de adesão.</p>
+    <div class="cbs rv">
+      <button class="bprim" id="simBtn3" style="font-size:16px;padding:16px 34px">Abrir Conta Grátis <i class="fa-solid fa-arrow-right"></i></button>
+      <button class="bout" style="font-size:16px;padding:16px 32px"><i class="fa-solid fa-headset"></i> Falar com Especialista</button>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="fg">
+    <div class="fb">
+      <div class="nlogo"><div class="nv">V</div><div><div class="nt1">Vale <span>Negociar</span></div><div class="nt2">Antecipe hoje. Cresça amanhã.</div></div></div>
+      <p>Plataforma digital de antecipação de recebíveis conectando empresas e fornecedores com inteligência financeira.</p>
+      <div class="certs"><span class="cert">BCB Regulado</span><span class="cert">ISO 27001</span><span class="cert">Open Finance</span><span class="cert">LGPD</span></div>
+    </div>
+    <div class="fc"><h5>Plataforma</h5><a href="#">Para Empresas</a><a href="#">Para Fornecedores</a><a href="#">Simulador</a><a href="#">API & Integrações</a><a href="#">Dashboard</a></div>
+    <div class="fc"><h5>Empresa</h5><a href="#">Sobre Nós</a><a href="#">Blog</a><a href="#">Imprensa</a><a href="#">Carreiras</a><a href="#">Contato</a></div>
+    <div class="fc"><h5>Legal</h5><a href="#">Termos de Uso</a><a href="#">Privacidade</a><a href="#">LGPD</a><a href="#">Compliance</a><a href="#">BCB Regulatório</a></div>
+  </div>
+  <div class="fbot">
+    <span>© 2025 Vale Negociar · CNPJ 00.000.000/0001-00 · Todos os direitos reservados</span>
+    <div class="socl"><a href="#"><i class="fa-brands fa-linkedin"></i></a><a href="#"><i class="fa-brands fa-instagram"></i></a><a href="#"><i class="fa-brands fa-x-twitter"></i></a><a href="#"><i class="fa-brands fa-youtube"></i></a></div>
+  </div>
+</footer>
+
+<!-- CHAT FAB -->
+<div id="lchat">
+  <div id="lpanel">
+    <div class="lph">
+      <!-- mini candle mascot in panel -->
+      <svg class="lpa" viewBox="0 0 42 42" xmlns="http://www.w3.org/2000/svg">
+        <rect x="8" y="12" width="10" height="22" rx="3" fill="#1a4080"/>
+        <rect x="12" y="6" width="2" height="7" rx="1" fill="#D4AF37"/>
+        <rect x="16" y="4" width="10" height="30" rx="3" fill="#c8a820"/>
+        <rect x="20" y="0" width="2" height="5" rx="1" fill="#f0d060"/>
+        <rect x="28" y="16" width="10" height="18" rx="3" fill="#1a4080"/>
+        <rect x="32" y="11" width="2" height="6" rx="1" fill="#D4AF37"/>
+        <circle cx="13" cy="22" r="3.5" fill="white" opacity=".95"/>
+        <circle cx="14" cy="23" r="2" fill="#050514"/>
+        <circle cx="21" cy="18" r="5" fill="white" opacity=".95"/>
+        <circle cx="22" cy="19" r="3" fill="#050514"/>
+        <circle cx="33" cy="24" r="3.5" fill="white" opacity=".95"/>
+        <circle cx="34" cy="25" r="2" fill="#050514"/>
+        <path d="M17 28 Q21 32 25 28" stroke="#D4AF37" stroke-width="2" fill="none" stroke-linecap="round"/>
+      </svg>
+      <div><div class="lpn">Luci — Vale Negociar</div><div class="lps">Online agora</div></div>
+      <button class="lpcl" id="lpClose"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="lpms" id="lpMs">
+      <div class="msg l">Oi! Eu sou o <strong>Luci</strong> 📈 Posso te ajudar a simular uma antecipação ou tirar dúvidas!<div class="mtime">Agora</div></div>
+      <div class="msg l">O que você prefere? 👇<div class="mtime">Agora</div></div>
+    </div>
+    <div class="lpq" id="lpQ">
+      <button class="lqb" onclick="sendQ('Quero simular uma antecipação')">💰 Simular</button>
+      <button class="lqb" onclick="sendQ('Como funciona?')">❓ Como funciona</button>
+      <button class="lqb" onclick="sendQ('Quais são as taxas?')">📊 Taxas</button>
+      <button class="lqb" onclick="sendQ('Quero me cadastrar')">🚀 Cadastrar</button>
+    </div>
+    <div class="lpi">
+      <input id="lpIn" type="text" placeholder="Escreva uma mensagem..." onkeydown="if(event.key==='Enter')sendMsg()"/>
+      <button class="lsen" onclick="sendMsg()"><i class="fa-solid fa-paper-plane"></i></button>
+    </div>
+  </div>
+  <button id="lfab" onclick="togglePanel()" aria-label="Chat com Luci">
+    <svg viewBox="0 0 42 42" xmlns="http://www.w3.org/2000/svg" width="42" height="42">
+      <rect x="5" y="10" width="8" height="18" rx="2.5" fill="#1a4080" opacity=".9"/>
+      <rect x="8.5" y="5" width="1.5" height="6" rx="1" fill="#f0d060"/>
+      <rect x="17" y="4" width="8" height="26" rx="2.5" fill="#c8a820"/>
+      <rect x="20.5" y="0" width="1.5" height="5" rx="1" fill="#f0d060"/>
+      <rect x="29" y="14" width="8" height="14" rx="2.5" fill="#1a4080" opacity=".9"/>
+      <rect x="32.5" y="9" width="1.5" height="6" rx="1" fill="#f0d060"/>
+      <circle cx="9" cy="19" r="3" fill="white" opacity=".94"/>
+      <circle id="fabPupC" cx="21" cy="15" r="4.5" fill="white" opacity=".94"/>
+      <circle cx="33" cy="21" r="3" fill="white" opacity=".94"/>
+      <circle cx="9.8" cy="19.8" r="1.8" fill="#050514"/>
+      <circle id="fabPupCC" cx="21.8" cy="15.8" r="2.8" fill="#050514"/>
+      <circle cx="33.8" cy="21.8" r="1.8" fill="#050514"/>
+      <path d="M17 30 Q21 34 25 30" stroke="#D4AF37" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+    </svg>
+    <div id="fbdg-n">1</div>
+  </button>
+</div>
+
+<!-- ════════════════ JS ════════════════ -->
+<script>
+/* ─── CURSOR ─── */
+const cdot=document.getElementById('cursor-dot'),cring=document.getElementById('cursor-ring');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cdot.style.left=mx+'px';cdot.style.top=my+'px'});
+(function tr(){rx+=(mx-rx)*.1;ry+=(my-ry)*.1;cring.style.left=rx+'px';cring.style.top=ry+'px';requestAnimationFrame(tr)})();
+document.querySelectorAll('button,a,.card,.tc,.bar').forEach(el=>{
+  el.addEventListener('mouseenter',()=>document.body.classList.add('hovering'));
+  el.addEventListener('mouseleave',()=>document.body.classList.remove('hovering'));
+});
+
+/* ─── LUCI ELEMENTS ─── */
+const luciRoot    = document.getElementById('luci-root');
+const cLeft       = document.getElementById('cLeft');
+const cCenter     = document.getElementById('cCenter');
+const cRight      = document.getElementById('cRight');
+const luciGlow    = document.getElementById('luci-glow');
+const luciBurst   = document.getElementById('luci-burst');
+const trendArrow  = document.getElementById('trend-arrow');
+const luciSpeech  = document.getElementById('luci-speech');
+const mouthPath   = document.getElementById('mouthPath');
+
+/* all pupils: [element, baseX_offset, baseY_offset] */
+const pupils = [
+  { el: document.getElementById('pupLL'), bx:0, by:0, range:2.5 },
+  { el: document.getElementById('pupLR'), bx:0, by:0, range:2.5 },
+  { el: document.getElementById('pupCL'), bx:0, by:0, range:4   },
+  { el: document.getElementById('pupCR'), bx:0, by:0, range:4   },
+  { el: document.getElementById('pupRL'), bx:0, by:0, range:2.5 },
+  { el: document.getElementById('pupRR'), bx:0, by:0, range:2.5 },
+];
+
+/* ─── STATE ─── */
+let breathT = 0, spTmr = null, isExcited = false;
+let targetTiltL = 0, targetTiltC = 0, targetTiltR = 0;
+let currentTiltL = 0, currentTiltC = 0, currentTiltR = 0;
+let targetPupX = 0, targetPupY = 0, curPupX = 0, curPupY = 0;
+
+const phrases = [
+  'Mercado em alta! 📈','Analiso tudo para você! 🔍',
+  'Liquidez na hora certa! 💧','Antecipe com confiança! 🛡️',
+  'Seu capital trabalhando! ⚡','Crescimento inteligente! 🚀',
+  'Dados em tempo real! 📊'
+];
+let phraseIdx = 0;
+
+function showSpeech(msg){
+  luciSpeech.textContent = msg || phrases[phraseIdx++ % phrases.length];
+  luciSpeech.classList.add('on');
+  clearTimeout(spTmr);
+  spTmr = setTimeout(()=>luciSpeech.classList.remove('on'), 3800);
+}
+
+/* ─── MOUSE TRACKING → tilt + pupils ─── */
+document.addEventListener('mousemove', e => {
+  if(isExcited) return;
+
+  /* get luci center */
+  const r = luciRoot.getBoundingClientRect();
+  const cx = r.left + r.width/2;
+  const cy = r.top  + r.height/2;
+  const dx = e.clientX - cx;
+  const dy = e.clientY - cy;
+  const dist = Math.sqrt(dx*dx+dy*dy);
+  const norm = Math.min(dist,500)/500;
+
+  /* candle tilt: left/right lean toward cursor, very subtle */
+  const tiltAmount = (dx/window.innerWidth)*8; /* max 8deg */
+  targetTiltL = tiltAmount * 0.6;
+  targetTiltC = tiltAmount * 0.3;
+  targetTiltR = tiltAmount * 0.8;
+
+  /* pupil offset */
+  targetPupX = (dx/Math.max(dist,1)) * norm * 4;
+  targetPupY = (dy/Math.max(dist,1)) * norm * 3;
+});
+
+/* ─── ANIMATION LOOP ─── */
+(function loop(){
+  breathT += 0.02;
+  const breath = Math.sin(breathT) * 2.5;
+
+  if(!isExcited){
+    /* interpolate tilts */
+    currentTiltL += (targetTiltL - currentTiltL) * 0.06;
+    currentTiltC += (targetTiltC - currentTiltC) * 0.06;
+    currentTiltR += (targetTiltR - currentTiltR) * 0.06;
+
+    cLeft.style.transform   = `rotate(${currentTiltL}deg)`;
+    cCenter.style.transform = `rotate(${currentTiltC}deg) translateY(${breath}px)`;
+    cRight.style.transform  = `rotate(${currentTiltR}deg)`;
+
+    /* interpolate pupils */
+    curPupX += (targetPupX - curPupX) * 0.08;
+    curPupY += (targetPupY - curPupY) * 0.08;
+
+    pupils.forEach(p => {
+      if(!p.el) return;
+      const px = curPupX * (p.range/4);
+      const py = curPupY * (p.range/3);
+      p.el.style.transform = `translate(calc(-50% + ${px}px), calc(-50% + ${py}px))`;
+    });
+
+    /* idle glow pulse via breath */
+    luciGlow.style.opacity = (0.55 + Math.sin(breathT)*0.2).toString();
+  }
+
+  requestAnimationFrame(loop);
+})();
+
+/* ─── EXCITED REACTION ─── */
+let excitedTimer = null;
+
+function enterExcited(){
+  if(isExcited) return;
+  isExcited = true;
+  showSpeech('Crescimento garantido! 🚀📈');
+
+  /* grow candles via inline style (overrides CSS defaults) */
+  const leftBody   = cLeft.querySelector('.candle-body');
+  const centerBody = cCenter.querySelector('.candle-body');
+  const rightBody  = cRight.querySelector('.candle-body');
+  const leftWick   = cLeft.querySelector('.wick');
+  const centerWick = cCenter.querySelector('.wick');
+  const rightWick  = cRight.querySelector('.wick');
+
+  /* save originals */
+  if(!leftBody.dataset.oh){
+    leftBody.dataset.oh   = getComputedStyle(leftBody).height;
+    centerBody.dataset.oh = getComputedStyle(centerBody).height;
+    rightBody.dataset.oh  = getComputedStyle(rightBody).height;
+    leftWick.dataset.oh   = getComputedStyle(leftWick).height;
+    centerWick.dataset.oh = getComputedStyle(centerWick).height;
+    rightWick.dataset.oh  = getComputedStyle(rightWick).height;
+  }
+
+  leftBody.style.height   = '165px';
+  centerBody.style.height = '270px';
+  rightBody.style.height  = '148px';
+  leftWick.style.height   = '28px';
+  centerWick.style.height = '46px';
+  rightWick.style.height  = '24px';
+  centerBody.style.boxShadow = '0 0 70px rgba(212,175,55,.7), 0 12px 60px rgba(212,175,55,.5)';
+
+  /* straight up – no tilt */
+  cLeft.style.transform   = 'rotate(0deg)';
+  cCenter.style.transform = 'rotate(0deg) scale(1.04)';
+  cRight.style.transform  = 'rotate(0deg)';
+  currentTiltL = currentTiltC = currentTiltR = 0;
+
+  /* wide smile */
+  mouthPath.setAttribute('d','M2 12 Q18 22 34 12');
+
+  /* eyebrows up */
+  document.querySelectorAll('.eyebrow').forEach(b=>{
+    b.style.top = '-14px';
+    b.style.transform = 'translateX(-50%) rotate(-3deg)';
+  });
+
+  /* glow burst + trend arrow */
+  luciBurst.classList.add('on');
+  trendArrow.classList.add('on');
+
+  /* spawn coins */
+  spawnCoins();
+
+  clearTimeout(excitedTimer);
+  excitedTimer = setTimeout(()=>{}, 99999); /* hold while hovered */
+}
+
+function leaveExcited(){
+  isExcited = false;
+  luciSpeech.classList.remove('on');
+
+  const leftBody   = cLeft.querySelector('.candle-body');
+  const centerBody = cCenter.querySelector('.candle-body');
+  const rightBody  = cRight.querySelector('.candle-body');
+  const leftWick   = cLeft.querySelector('.wick');
+  const centerWick = cCenter.querySelector('.wick');
+  const rightWick  = cRight.querySelector('.wick');
+
+  leftBody.style.height   = '';
+  centerBody.style.height = '';
+  rightBody.style.height  = '';
+  leftWick.style.height   = '';
+  centerWick.style.height = '';
+  rightWick.style.height  = '';
+  centerBody.style.boxShadow = '';
+  cCenter.style.transform = '';
+
+  mouthPath.setAttribute('d','M4 8 Q18 16 32 8');
+
+  document.querySelectorAll('.eyebrow').forEach(b=>{
+    b.style.top = '';
+    b.style.transform = '';
+  });
+
+  luciBurst.classList.remove('on');
+  trendArrow.classList.remove('on');
+}
+
+/* ─── COINS ─── */
+function spawnCoins(){
+  const btn = document.getElementById('simBtn') || document.getElementById('simBtn2');
+  if(!btn) return;
+  const r = btn.getBoundingClientRect();
+  const cx = r.left + r.width/2, cy = r.top;
+  const pool = ['💰','🪙','💵','📈','✨','💎','🤑'];
+  for(let i=0;i<10;i++){
+    const el = document.createElement('div');
+    el.className = 'fcoin';
+    const angle = (Math.PI*2*i/10) + (Math.random()-.5)*.7;
+    const spd   = 60 + Math.random()*90;
+    el.style.cssText = `left:${cx}px;top:${cy}px;font-size:${18+Math.random()*10}px;--tx:${Math.cos(angle)*spd}px;--ty:${Math.sin(angle)*spd-50}px;--tr:${Math.random()*640-320}deg;animation-delay:${Math.random()*.25}s`;
+    el.textContent = pool[~~(Math.random()*pool.length)];
+    document.body.appendChild(el);
+    setTimeout(()=>el.remove(),1600);
+  }
+}
+
+/* ─── BUTTON LISTENERS ─── */
+['simBtn','simBtn2','simBtn3'].forEach(id=>{
+  const el = document.getElementById(id);
+  if(!el) return;
+  el.addEventListener('mouseenter', enterExcited);
+  el.addEventListener('mouseleave', leaveExcited);
+  el.addEventListener('click', ()=>document.getElementById('sim').scrollIntoView({behavior:'smooth'}));
+});
+
+/* ─── NAVBAR ─── */
+window.addEventListener('scroll',()=>
+  document.getElementById('nav').classList.toggle('scrolled',window.scrollY>60));
+
+/* ─── SIMULATOR ─── */
+function pV(s){return parseFloat(s.replace(/[^0-9,]/g,'').replace(',','.'))||0}
+function brl(n){return 'R$ '+n.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})}
+function runSim(){
+  const b=pV(document.getElementById('sv').value)||100000;
+  const p=parseInt(document.getElementById('spr').value);
+  const t=parseFloat(document.getElementById('st').value);
+  const d=b*(t/100)*(p/30),l=b-d;
+  document.getElementById('rB').textContent=brl(b);
+  document.getElementById('rP').textContent=p+' dias';
+  document.getElementById('rT').textContent=t.toFixed(2).replace('.',',')+' a.m.';
+  document.getElementById('rD').textContent='- '+brl(d);
+  document.getElementById('rLiq').textContent=brl(l);
+  document.getElementById('rA').textContent=(p-2)+' dias';
+  document.getElementById('txTxt').textContent=t.toFixed(2).replace('.',',')+' a.m.';
+}
+runSim();
+
+/* ─── SPEECH ROTATION ─── */
+setTimeout(()=>showSpeech('Mercado em alta! 📈'),2000);
+setInterval(()=>{if(!isExcited)showSpeech()},11000);
+
+/* ─── CHAT PANEL ─── */
+let pOpen=false;
+function togglePanel(){
+  pOpen=!pOpen;
+  document.getElementById('lpanel').classList.toggle('open',pOpen);
+  if(pOpen)document.getElementById('fbdg-n').style.display='none';
+}
+document.getElementById('lpClose').onclick=()=>{pOpen=false;document.getElementById('lpanel').classList.remove('open')};
+
+const SYSTEM_PROMPT=`Você é o assistente virtual do Vale Negociar, uma plataforma fintech de antecipação de recebíveis para empresas e fornecedores.
+
+Tom de voz: profissional, claro, consultivo, objetivo, confiável. Sem linguagem excessivamente técnica. Respostas curtas e diretas — no máximo 2 parágrafos curtos por mensagem.
+
+O que você pode fazer:
+1. Explicar o que é antecipação de recebíveis com exemplos simples.
+2. Mostrar os benefícios para empresas e fornecedores.
+3. Coletar informações para simulação: nome da empresa, CNPJ, valor dos recebíveis, prazo médio, tipo de recebível, nome e contato. Colete um dado de cada vez, de forma natural.
+4. Direcionar para consultor via WhatsApp.
+5. Responder dúvidas sobre prazo, segurança e funcionamento.
+
+Regras absolutas:
+- NUNCA prometa aprovação automática.
+- NUNCA informe taxas fixas — diga que variam conforme valor, prazo, risco e perfil.
+- NUNCA solicite senha, dados bancários ou documentos sensíveis.
+- NUNCA diga que a operação está aprovada.
+- Use sempre: "pré-análise", "simulação", "proposta sujeita à avaliação".
+- Sobre taxas: As taxas variam conforme valor, prazo, perfil e análise da operação.
+- Sobre segurança: Trabalhamos com processo estruturado, transparência e clareza nas condições antes da contratação.
+- Sobre funcionamento: Transformamos valores futuros em capital disponível hoje, ajudando no fluxo de caixa.`;
+
+let chatHistory=[];
+
+function addMsg(txt,cls){
+  const ms=document.getElementById('lpMs');
+  const d=document.createElement('div');
+  d.className='msg '+cls;d.innerHTML=txt.replace(/\n/g,'<br>')+'<div class="mtime">Agora</div>';
+  ms.appendChild(d);ms.scrollTop=ms.scrollHeight;
+}
+function addTyping(){
+  const ms=document.getElementById('lpMs');
+  const d=document.createElement('div');
+  d.className='typing';d.id='typ';d.innerHTML='<div class="td"></div><div class="td"></div><div class="td"></div>';
+  ms.appendChild(d);ms.scrollTop=ms.scrollHeight;return d;
+}
+async function sendMsg(){
+  const inp=document.getElementById('lpIn');const v=inp.value.trim();if(!v)return;
+  addMsg(v,'u');inp.value='';
+  const lsenBtn=document.querySelector('.lsen');if(lsenBtn)lsenBtn.disabled=true;
+  chatHistory.push({role:'user',content:v});
+  const t=addTyping();
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:600,system:SYSTEM_PROMPT,messages:chatHistory})
+    });
+    const data=await res.json();
+    const reply=data.content?.map(i=>i.text||'').join('')||'Desculpe, não consegui processar. Tente novamente.';
+    chatHistory.push({role:'assistant',content:reply});
+    t.remove();addMsg(reply,'l');
+    const lc=reply.toLowerCase();
+    if(lc.includes('whatsapp')&&chatHistory.length>4){
+      setTimeout(()=>window.open('https://wa.me/5511999999999?text='+encodeURIComponent('Olá! Quero falar com um consultor do Vale Negociar.'),'_blank'),600);
+    }
+  }catch(e){t.remove();addMsg('Erro de conexão. Tente novamente.','l')}
+  if(lsenBtn)lsenBtn.disabled=false;
+}
+function sendQ(txt){document.getElementById('lpIn').value=txt;sendMsg();document.getElementById('lpQ').style.display='none'}
+
+async function initChat(){
+  const t=addTyping();
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:300,system:SYSTEM_PROMPT,messages:[{role:'user',content:'iniciar'}]})
+    });
+    const data=await res.json();
+    const greeting=data.content?.map(i=>i.text||'').join('')||'Olá! Sou o assistente do Vale Negociar. Como posso ajudar?';
+    chatHistory.push({role:'user',content:'iniciar'});
+    chatHistory.push({role:'assistant',content:greeting});
+    t.remove();addMsg(greeting,'l');
+  }catch(e){t.remove();addMsg('Olá! Sou o assistente do Vale Negociar. Como posso ajudar?','l')}
+}
+initChat();
+
+/* ─── SCROLL REVEAL ─── */
+const io=new IntersectionObserver(en=>en.forEach(e=>{if(e.isIntersecting){e.target.classList.add('on');io.unobserve(e.target)}}),{threshold:.1});
+document.querySelectorAll('.rv').forEach(el=>io.observe(el));
+document.querySelectorAll('.sgrid .card').forEach((c,i)=>c.style.transitionDelay=i*.08+'s');
+document.querySelectorAll('.bi').forEach((c,i)=>c.style.transitionDelay=i*.1+'s');
+
+/* apply CSS candle sizing */
+const applyStyles=()=>{
+  const styles=`
+    .c-left .candle-body{height:130px;width:52px}
+    .c-center .candle-body{height:200px;width:72px}
+    .c-right .candle-body{height:110px;width:52px}
+    .c-left .wick{height:22px}.c-center .wick{height:32px}.c-right .wick{height:18px}
+    .candle-wrap{transition:transform .5s cubic-bezier(.34,1.56,.64,1)}
+    .candle-body{transition:height .55s cubic-bezier(.34,1.56,.64,1),box-shadow .4s}
+    .wick{transition:height .55s cubic-bezier(.34,1.56,.64,1)}
+    .eyebrow{transition:top .35s ease,transform .35s ease}
+    #cCenter .candle-body{background:linear-gradient(160deg,#c8a820,#8a6c10)}
+    #cLeft .candle-body,#cRight .candle-body{background:linear-gradient(160deg,#1a4080,#0a2040)}
+    .eye-pair{bottom:52%}.c-center .eye-pair{bottom:54%}
+    .eye{background:radial-gradient(circle at 38% 35%,#fff 0%,#d8eeff 100%);box-shadow:0 2px 8px rgba(0,0,0,.3)}
+    #cCenter .eye{width:28px;height:30px}
+    #cLeft .eye,#cRight .eye{width:20px;height:22px}
+    .pupil{position:absolute;background:radial-gradient(circle at 38% 35%,#2a2a4a,#050514);border-radius:50%;top:50%;left:50%;transform:translate(-50%,-50%)}
+    #cCenter .pupil{width:14px;height:14px}
+    #cLeft .pupil,#cRight .pupil{width:10px;height:10px}
+    .eyebrow{position:absolute;top:-9px;left:50%;transform:translateX(-50%);width:75%;height:3px;background:var(--gold);border-radius:3px;box-shadow:0 0 6px var(--gold-g)}
+    #cCenter .eyebrow{height:4px;top:-11px}
+    .mouth{position:absolute;bottom:34%;left:50%;transform:translateX(-50%)}
+    .candle-foot{height:6px;background:linear-gradient(90deg,rgba(0,0,0,.3),rgba(255,255,255,.06),rgba(0,0,0,.3));border-radius:0 0 5px 5px}
+    #cLeft .candle-foot{width:70%}#cCenter .candle-foot{width:85%}#cRight .candle-foot{width:70%}
+    .wick{width:5px;background:linear-gradient(180deg,#f0d060,#D4AF37);border-radius:3px 3px 0 0;margin-bottom:-2px;box-shadow:0 0 8px var(--gold-g)}
+  `;
+  const s=document.createElement('style');s.textContent=styles;document.head.appendChild(s);
+};
+applyStyles();
+</script>
+</body>
+</html>
